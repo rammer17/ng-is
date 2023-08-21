@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconName, IconProp } from '@fortawesome/fontawesome-svg-core';
@@ -25,7 +32,7 @@ export class ButtonComponent {
 
   @Input('disabled') disabled?: boolean;
   @Input('loading') loading: boolean = false;
-  @Input('class') class: string = '';
+  @Input('styleClass') class: ButtonStyles[] = [];
 
   @Output('onClick') onClick: EventEmitter<MouseEvent> = new EventEmitter<MouseEvent>();
   @Output('onFocus') onFocus: EventEmitter<FocusEvent> = new EventEmitter<FocusEvent>();
@@ -36,11 +43,13 @@ export class ButtonComponent {
   buttonClass(): Object {
     return {
       'is-button': true,
-      'is-button-primary': true,
-      'is-button-secondary': true,
-      'is-button-destructive': true,
-      // 'is-button-outlined': true,
+      'is-button-primary': this.class.includes('primary'),
+      'is-button-secondary': this.class.includes('secondary'),
+      'is-button-destructive': this.class.includes('destructive'),
+      'is-button-outlined': this.class.includes('outlined'),
       'is-button-loading': this.loading,
     };
   }
 }
+
+export type ButtonStyles = 'primary' | 'secondary' | 'destructive' | 'outlined' | '';
