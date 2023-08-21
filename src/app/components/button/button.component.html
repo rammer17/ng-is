@@ -1,0 +1,23 @@
+<button
+  [type]="type"
+  [disabled]="disabled || loading"
+  [class]="class"
+  [style]="{ color: labelColor }"
+  [ngClass]="buttonClass()"
+  (click)="onClick.emit($event)"
+  (focus)="onFocus.emit($event)"
+  (blur)="onBlur.emit($event)">
+  <ng-container *ngIf="icon && !loading">
+    <fa-icon
+      [size]="iconSize"
+      [pull]="iconPos"
+      [style]="{ color: iconColor }"
+      [icon]="['fas', icon]"></fa-icon>
+  </ng-container>
+  <ng-container *ngIf="loading === true && !icon">
+    <fa-icon [size]="iconSize" [pull]="iconPos" animation="spin" [icon]="loadingIcon"></fa-icon>
+  </ng-container>
+  <ng-container *ngIf="label">
+    {{ label }}
+  </ng-container>
+</button>

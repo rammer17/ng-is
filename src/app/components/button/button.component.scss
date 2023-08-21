@@ -1,0 +1,67 @@
+.is-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  transition: box-shadow 0.2s;
+}
+.is-button:hover:not([disabled]) {
+  cursor: pointer;
+}
+
+.is-button-primary {
+  color: hsl(var(--primary-foreground));
+  background-color: hsl(var(--primary));
+}
+.is-button-primary:hover:not([disabled]) {
+  background-color: hsl(var(--primary) / 0.9);
+}
+.is-button-primary:enabled:focus {
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.6);
+}
+
+.is-button-secondary {
+  color: hsl(var(--secondary-foreground));
+  background-color: hsl(var(--secondary));
+}
+.is-button-secondary:hover:not([disabled]) {
+  background-color: hsl(var(--secondary) / 0.9);
+}
+.is-button-secondary:enabled:focus {
+  box-shadow: 0 0 0 2px hsl(var(--secondary) / 0.6);
+}
+
+.is-button-destructive {
+  color: hsl(var(--destructive-foreground));
+  background-color: hsl(var(--destructive));
+}
+.is-button-destructive:hover:not([disabled]) {
+  background-color: hsl(var(--destructive) / 0.9);
+}
+.is-button-destructive:enabled:focus {
+  box-shadow: 0 0 0 2px hsl(var(--destructive) / 0.6);
+}
+
+.is-button-outlined {
+  background-color: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--accent-foreground));
+}
+.is-button-outlined:hover:not([disabled]) {
+  background-color: hsl(var(--accent));
+}
+
+.is-button-loading {
+  opacity: 0.5;
+}
+.spinner {
+  animation: spin-animation 1s linear infinite;
+  display: inline-block;
+}
+@keyframes spin-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
