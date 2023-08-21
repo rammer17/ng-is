@@ -1,7 +1,6 @@
 <button
   [type]="type"
   [disabled]="disabled || loading"
-  [class]="class"
   [style]="{ color: labelColor }"
   [ngClass]="buttonClass()"
   (click)="onClick.emit($event)"
