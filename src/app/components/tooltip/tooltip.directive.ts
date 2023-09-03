@@ -71,6 +71,7 @@ export class TooltipDirective {
         takeUntil(focus$),
         finalize(() => {
           this.removeComponent(this.tooltipComponentRef!);
+          this.tooltipComponentRef = undefined;
           this.tooltip$ = undefined;
           this.cdr.detectChanges();
           this.initTooltipObservable();
@@ -154,6 +155,7 @@ export class TooltipDirective {
 
     this.projectComponentInputs(componentRef, options);
 
+    
     appRef.attachView(componentRef.hostView);
 
     componentRef.onDestroy(() => {
@@ -161,7 +163,7 @@ export class TooltipDirective {
     });
 
     location.appendChild(componentRootNode);
-
+    
     return componentRef;
   }
 
