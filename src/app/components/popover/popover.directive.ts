@@ -96,7 +96,7 @@ export class PopoverDirective {
     });
   }
 
-  initResizeObs() {
+  private initResizeObs() {
     this.resize$ = merge(
       fromEvent(window, 'resize', { capture: true }),
       fromEvent(window, 'scroll', { capture: true }).pipe(throttleTime(15))

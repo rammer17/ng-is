@@ -17,8 +17,21 @@ import {
   ComponentFactoryResolver,
   Injector,
   Type,
+  HostListener,
 } from '@angular/core';
-import { Observable, delay, filter, finalize, fromEvent, takeUntil, tap } from 'rxjs';
+import {
+  EMPTY,
+  Observable,
+  ReplaySubject,
+  delay,
+  filter,
+  finalize,
+  fromEvent,
+  merge,
+  takeUntil,
+  tap,
+  throttleTime,
+} from 'rxjs';
 
 @Directive({
   selector: '[appTooltip]',
@@ -37,7 +50,7 @@ export class TooltipDirective {
   //Position of the tooltip relative to the host element
   @Input('tooltipPos') tooltipPos: 'left' | 'right' | 'top' | 'bottom' = 'top';
   //Delay after which the tooltip appears
-  @Input('tooltipDelay') delay: number = 750;
+  @Input('tooltipDelay') delay: number = 200;
   //Duration in ms for which Enter and Exit animations occur
   @Input('animationDuration') animationDuration: number = 150;
 
@@ -48,10 +61,14 @@ export class TooltipDirective {
     this.initTooltipObservable();
   }
 
+  destroy$?: ReplaySubject<any>;
+
   initTooltipObservable(): void {
     const mouseEnter$ = fromEvent(this.el.nativeElement, 'mouseenter');
     const mouseLeave$ = fromEvent(this.el.nativeElement, 'mouseleave');
-    const focus$ = fromEvent(this.el.nativeElement, 'click');
+    const click$ = fromEvent(this.el.nativeElement, 'click');
+
+    this.destroy$ = new ReplaySubject<any>(1);
 
     mouseEnter$
       .pipe(
@@ -67,17 +84,33 @@ export class TooltipDirective {
           this.createTooltip();
           e.stopPropagation();
         }),
-        takeUntil(mouseLeave$),
-        takeUntil(focus$),
+        takeUntil(this.destroy$),
         finalize(() => {
           this.removeComponent(this.tooltipComponentRef!);
           this.tooltipComponentRef = undefined;
           this.tooltip$ = undefined;
           this.cdr.detectChanges();
-          this.initTooltipObservable();
         })
       )
       .subscribe();
+
+    merge(
+      fromEvent(window, 'resize', { capture: true }),
+      fromEvent(window, 'resize', { capture: true }).pipe(throttleTime(15)),
+      mouseLeave$,
+      click$
+    )
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.initTooltipObservable();
+        this.destroy$!.next(null);
+      });
+  }
+
+  test() {
+    setTimeout(() => {
+      this.initTooltipObservable();
+    }, 100);
   }
 
   private createTooltip(): void {
@@ -116,21 +149,8 @@ export class TooltipDirective {
     });
   }
 
-  private getRootViewContainer(): ComponentRef<any> {
-    if (this.tooltipComponentRef) return this.tooltipComponentRef;
-
-    const rootComponents = this.appRef['components'];
-    if (rootComponents.length) return rootComponents[0];
-
-    throw new Error();
-  }
-
   private getComponentRootNode(componentRef: ComponentRef<any>): HTMLElement {
     return (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
-  }
-
-  private getRootViewContainerNode(): HTMLElement {
-    return this.getComponentRootNode(this.getRootViewContainer());
   }
 
   private projectComponentInputs(component: ComponentRef<any>, options: any): ComponentRef<any> {
@@ -146,7 +166,7 @@ export class TooltipDirective {
   private appendComponent<T>(
     componentClass: Type<T>,
     options: any = {},
-    location: Element = this.getRootViewContainerNode()
+    location: Element = document.body
   ): ComponentRef<any> {
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentClass);
     let componentRef = componentFactory.create(this.injector);
@@ -155,7 +175,6 @@ export class TooltipDirective {
 
     this.projectComponentInputs(componentRef, options);
 
-    
     appRef.attachView(componentRef.hostView);
 
     componentRef.onDestroy(() => {
@@ -163,7 +182,7 @@ export class TooltipDirective {
     });
 
     location.appendChild(componentRootNode);
-    
+
     return componentRef;
   }
 
