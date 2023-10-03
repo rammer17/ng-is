@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -36,6 +36,7 @@ export class PopoverDirective {
   @Input('appendTo') target: 'body' | undefined;
   @Input('isPopover') showPopover: boolean = true;
   @Input('template') popoverTemplate?: any;
+  @Input('templateContext') popoverTemplateContext?: any;
   @Input('position') position: 'left' | 'right' | 'top' | 'bottom' = 'top';
   @Input('animationDuration') animationDuration: number = 150;
 
@@ -83,6 +84,7 @@ export class PopoverDirective {
     setTimeout(() => {
       this._popoverComponentRef = this.appendComponent({
         template: this.popoverTemplate,
+        context: this.popoverTemplateContext,
         position: this.position,
         target: this.getLocationViewContainer(),
         translateDirection: translateDir,
@@ -150,7 +152,9 @@ export class PopoverDirective {
 
 @Component({
   selector: 'is-popover',
-  template: ` <ng-container *ngTemplateOutlet="template!"></ng-container> `,
+  template: `
+    <ng-container *ngTemplateOutlet="template!; context: { $implicit: context }"></ng-container>
+  `,
   styles: [
     `
       :host {
@@ -159,20 +163,20 @@ export class PopoverDirective {
         left: 0;
         word-break: keep-all;
         line-break: strict;
-        min-width: 200px;
+        min-width: 100px;
         max-width: 400px;
         overflow: hidden;
       }
     `,
   ],
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('defaultAnimation', [
       state('void, false', style({ transform: 'scale(0)' })),
       transition('* => true', [
-        style({ opacity: 0, transform: 'translate{{ td }}({{ tv }}50%) scale(0.5)' }),
+        style({ opacity: 0, transform: 'translate{{ td }}({{ tv }}30%) scale(0.5)' }),
         animate('{{ ad }}ms', style({ opacity: 1, transform: 'translate{{ td }}(0) scale(1)' })),
       ]),
       transition('* => false', [
@@ -187,6 +191,7 @@ class PopoverComponent {
   private readonly host: ElementRef<HTMLElement> = inject(ElementRef<HTMLElement>);
 
   template!: TemplateRef<any>;
+  context?: object;
   position: 'left' | 'right' | 'top' | 'bottom' = 'top';
   target!: HTMLElement;
 

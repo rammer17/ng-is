@@ -47,9 +47,11 @@ export class ButtonComponent {
       'is-button-secondary': this.class.includes('secondary'),
       'is-button-destructive': this.class.includes('destructive'),
       'is-button-outlined': this.class.includes('outlined'),
+      'is-button-ghost': this.class.includes('ghost'),
       'is-button-loading': this.loading,
+      'is-button-dashed': this.class.includes('dashed')
     };
   }
 }
 
-export type ButtonStyles = 'primary' | 'secondary' | 'destructive' | 'outlined' | '';
+export type ButtonStyles = 'primary' | 'secondary' | 'destructive' | 'outlined' | 'ghost' | 'dashed' | '';

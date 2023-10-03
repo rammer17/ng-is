@@ -25,11 +25,17 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
         [type]="type"
         [placeholder]="placeholder"
         title=""
+        [checked]="checked"
         [ngModel]="value"
         (ngModelChange)="onInputChange($event)"
         [accept]="allowedExtensions"
         [ngClass]="inputClass()" />
-      <fa-icon *ngIf="inputIcon" [ngClass]="iconClass()" [icon]="inputIcon"></fa-icon>
+      <fa-icon
+        *ngIf="inputIcon && type !== 'checkbox'"
+        [style]="{ color: iconColor }"
+        [size]="iconSize"
+        [ngClass]="iconClass()"
+        [icon]="inputIcon"></fa-icon>
     </div>
   `,
   styles: [
@@ -40,7 +46,7 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
       .is-input {
         padding: 0.5rem 0.75rem;
         border-radius: calc(0.5rem - 2px);
-        height: 2.5rem;
+        height: 2rem;
         font-size: 0.875rem;
         line-height: 1.25rem;
         border: 1px solid hsl(var(--input));
@@ -48,13 +54,12 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
         color: hsl(var(--foreground));
         position: relative;
         z-index: 51;
-        width: 500px;
         transition: 0.15s border;
       }
       .is-input:disabled:hover {
         cursor: not-allowed;
       }
-      .is-input:focus-visible {
+      input:not([type='checkbox']):focus-visible {
         box-shadow: hsl(var(--background));
         outline: 2px solid hsl(var(--foreground));
         outline-offset: 1px;
@@ -93,6 +98,13 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
           outline: 2px solid hsl(var(--success));
         }
       }
+      .input-ghost {
+        .is-input {
+          outline: none;
+          border: none;
+        }
+      }
+
       .is-input::file-selector-button {
         background: hsl(var(--background));
         color: hsl(var(--foreground));
@@ -102,6 +114,11 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
       .input-file-icon {
         .is-input::file-selector-button {
           margin-left: 20px;
+        }
+      }
+      .input-icon {
+        input {
+          padding-left: 2rem;
         }
       }
       .is-input::file-selector-button:hover,
@@ -118,6 +135,38 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
         right: 0;
         transform: translateX(-50%);
       }
+      .is-input[type='checkbox'] {
+        -moz-appearance: none;
+        appearance: none;
+        padding: 0.1rem 0.4rem;
+        width: 16px;
+        height: 16px;
+        transition-duration: 0.15s;
+        transition-property: background-color;
+        border-color: hsl(var(--primary));
+      }
+      .is-input[type='checkbox']::before {
+        content: '✓';
+        color: transparent;
+        position: relative;
+        top: -4px;
+        left: -4px;
+      }
+      .is-input[type='checkbox']:checked {
+        -moz-appearance: none;
+        background-color: hsl(var(--primary));
+      }
+      .is-input[type='checkbox']:checked::before {
+        content: '✓';
+        color: black;
+      }
+      .is-input[type='checkbox']:focus-visible {
+        outline: none;
+      }
+      .input-checkbox {
+        display: inline-flex;
+        align-items:center
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -130,7 +179,7 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
   ],
 })
 export class InputComponent implements ControlValueAccessor {
-  @Input() value?: any;
+  @Input() value: any;
   @Input('type') type: InputTypes = 'text';
   @Input('placeholder') placeholder: string = '';
   @Input('invalid') invalid: boolean = false;
@@ -139,8 +188,13 @@ export class InputComponent implements ControlValueAccessor {
   @Input('allowedExtensions') allowedExtensions: string[] = [];
   @Input('icon') inputIcon?: IconName | IconDefinition;
   @Input('iconPos') iconPos: 'left' | 'right' = 'left';
+  @Input('iconColor') iconColor?: string;
+  @Input('iconSize') iconSize?: '2xs' | 'xs' | 'sm' | 'lg' | 'xl' | '2xl';
+  @Input('ghost') ghost: boolean = false;
 
   @ViewChild('input') input?: ElementRef<HTMLInputElement>;
+
+  @Input('checked') checked: boolean = false;
 
   onChange: any = () => {};
   onTouched: any = () => {};
@@ -151,12 +205,19 @@ export class InputComponent implements ControlValueAccessor {
     };
   }
 
+  ngOnInit() {
+    // if(this.type === 'checkbox') {this.onInputChange(this.checked)}
+  }
+
   wrapperClass(): Object {
     return {
       'input-wrapper': true,
       'input-destructive': this.invalid,
       'input-success': this.valid,
       'input-file-icon': this.type === 'file' && this.iconPos === 'left' && this.inputIcon,
+      'input-icon': this.inputIcon && this.iconPos === 'left',
+      'input-ghost': this.ghost,
+      'input-checkbox': this.type === 'checkbox',
     };
   }
 
@@ -168,10 +229,12 @@ export class InputComponent implements ControlValueAccessor {
 
   writeValue(value: string): void {
     this.value = value;
+    if (this.type === 'checkbox') {
+      this.onInputChange(true);
+    }
   }
 
   registerOnChange(fn: any): void {
-    console.log(fn);
     this.onChange = fn;
   }
 
@@ -180,10 +243,14 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   onInputChange(value: any): void {
+    if (this.type === 'checkbox') {
+      this.checked = !this.checked;
+      value = this.checked;
+    }
     this.value = value;
     this.onChange(value);
     this.onTouched();
   }
 }
 
-export type InputTypes = 'text' | 'number' | 'password' | 'file';
+export type InputTypes = 'text' | 'number' | 'password' | 'file' | 'checkbox';
