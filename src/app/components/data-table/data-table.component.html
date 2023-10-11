@@ -1,21 +1,29 @@
 <div class="data-table-wrapper">
-  <ng-container *ngTemplateOutlet="headerTemplate || defaultHeaderTemplate"></ng-container>
+  <ng-container
+    *ngTemplateOutlet="headerTemplate || defaultHeaderTemplate"
+  ></ng-container>
   <div class="rounded-table-border">
     <table>
       <thead>
         <tr>
           <th><is-input [type]="'checkbox'"></is-input></th>
           <ng-container *ngFor="let fieldType of fields; let i = index">
-            <th *ngIf="fieldType.showInTable" [ngClass]="{ sort: fieldType.showInTable }">
+            <th
+              *ngIf="fieldType.showInTable"
+              [ngClass]="{ sort: fieldType.showInTable }"
+            >
               <div
                 class="sort-wrapper"
                 [ngClass]="{ 'sort-wrapper-hover': fieldType.sort }"
-                [isPopover]="showTableHeadSorting && tempSortIndex === i && fieldType.sort"
+                [isPopover]="
+                  showTableHeadSorting && tempSortIndex === i && fieldType.sort
+                "
                 [appendTo]="'body'"
                 [position]="'bottom'"
                 [template]="tableHeadSortTemplate"
                 [templateContext]="i"
-                (click)="onTogglePopover('SORT', i)">
+                (click)="onTogglePopover('SORT', i)"
+              >
                 <span>{{ fieldType.name }}</span>
                 <fa-icon
                   *ngIf="fieldType.sort"
@@ -26,7 +34,8 @@
                       : sortOrder === 'DESC' && sortIndex === i
                       ? 'sort-down'
                       : 'sort'
-                  ]"></fa-icon>
+                  ]"
+                ></fa-icon>
               </div>
             </th>
           </ng-container>
@@ -48,13 +57,16 @@
               [isPopover]="showActions && actionIndex === i"
               [position]="'bottom'"
               [appendTo]="'body'"
-              [template]="actionsTemplate"></fa-icon>
+              [template]="actionsTemplate"
+            ></fa-icon>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
-  <ng-container *ngTemplateOutlet="footerTemplate || defaultFooterTemplate"></ng-container>
+  <ng-container
+    *ngTemplateOutlet="footerTemplate || defaultFooterTemplate"
+  ></ng-container>
 </div>
 
 <ng-template #actionsTemplate>
@@ -69,14 +81,17 @@
 <ng-template #tableHeadSortTemplate let-index>
   <div class="default-thead-sort-template">
     <div (click)="onSortTableRows('ASC')" class="sort-options">
-      <fa-icon [icon]="['fas', 'arrow-up-wide-short']"></fa-icon>Asc
+      <fa-icon [icon]="['fas', 'arrow-up-wide-short']"></fa-icon>
+      Asc
     </div>
     <div (click)="onSortTableRows('DESC')" class="sort-options">
-      <fa-icon [icon]="['fas', 'arrow-down-short-wide']"></fa-icon>Desc
+      <fa-icon [icon]="['fas', 'arrow-down-short-wide']"></fa-icon>
+      Desc
     </div>
     <div class="divider"></div>
     <div (click)="onToggleTableField(index)" class="sort-options">
-      <fa-icon [icon]="['far', 'eye-slash']"></fa-icon>Hide
+      <fa-icon [icon]="['far', 'eye-slash']"></fa-icon>
+      Hide
     </div>
   </div>
 </ng-template>
@@ -84,7 +99,11 @@
 <ng-template #defaultHeaderTemplate>
   <div class="default-header-template">
     <div class="header-filters">
-      <is-input [type]="'text'" [icon]="'search'" [placeholder]="'Filter'"></is-input>
+      <is-input
+        [type]="'text'"
+        [icon]="'search'"
+        [placeholder]="'Filter'"
+      ></is-input>
       <is-button
         *ngFor="let filter of filters; let i = index"
         [isPopover]="showFilter && filterIndex === i"
@@ -96,7 +115,8 @@
         [label]="filter.name"
         [styleClass]="['outlined', 'dashed']"
         [type]="'button'"
-        [icon]="'filter'">
+        [icon]="'filter'"
+      >
         <div class="filter-values">
           <div class="vertical-divider"></div>
           A, B
@@ -108,14 +128,15 @@
       [isPopover]="showToggleColumns"
       [position]="'bottom'"
       [appendTo]="'body'"
-      [template]="toggleColumnsTemplate">
+      [template]="toggleColumnsTemplate"
+    >
       <is-button
         (onClick)="onTogglePopover('TOGGLE_COLUMN')"
         [type]="'button'"
         [styleClass]="['outlined']"
         [label]="'View'"
-        [icon]="'sliders'">
-      </is-button>
+        [icon]="'sliders'"
+      ></is-button>
     </div>
   </div>
 </ng-template>
@@ -127,9 +148,12 @@
     <div
       *ngFor="let column of fields; let i = index"
       class="table-columns"
-      (click)="onToggleTableField(i)">
-      <fa-icon [icon]="['far', column.showInTable ? 'circle-check' : 'circle-xmark']"></fa-icon
-      >{{ column.name }}
+      (click)="onToggleTableField(i)"
+    >
+      <fa-icon
+        [icon]="['far', column.showInTable ? 'circle-check' : 'circle-xmark']"
+      ></fa-icon>
+      {{ column.name }}
     </div>
   </div>
 </ng-template>
@@ -138,22 +162,34 @@
   <div class="filter-options-container">
     <div class="search-bar">
       <is-input
+        #filterAutocompleteInput
+        (onChange)="onFilterAutocomplete(filterAutocompleteInput.value)"
         [placeholder]="filter.name"
         [type]="'text'"
         [ghost]="true"
         [iconSize]="'sm'"
         [iconColor]="'hsl(var(--muted-foreground))'"
-        [icon]="'search'"></is-input>
+        [icon]="'search'"
+      ></is-input>
       <div class="divider"></div>
-      <div *ngFor="let option of availableFilters$ | async; let i = index" class="filter-options">
-        <is-input
-          [(ngModel)]="activeFilters[option]"
-          [checked]="activeFilters[option]"
-          (change)="onFilterChange(option, filter)"
-          [type]="'checkbox'"></is-input>
-        <fa-icon [icon]="['far', 'circle']"></fa-icon>
-        <span>{{ option }}</span>
-      </div>
+      <ng-container *ngIf="availableFilters$ | async as availableFilters; else noAvailableFilters">
+        <div
+          *ngFor="let option of availableFilters; let i = index"
+          class="filter-options"
+        >
+          <is-input
+            [(ngModel)]="activeFilters[option]"
+            [checked]="activeFilters[option]"
+            (change)="onFilterChange(option, filter)"
+            [type]="'checkbox'"
+          ></is-input>
+          <fa-icon [icon]="['far', 'circle']"></fa-icon>
+          <span>{{ option }}</span>
+        </div>
+      </ng-container>
+      <ng-template #noAvailableFilters>
+        No Values Available!
+      </ng-template>
     </div>
   </div>
 </ng-template>

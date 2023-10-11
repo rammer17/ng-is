@@ -5,14 +5,19 @@ import {
   Input,
   TemplateRef,
   inject,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IconDefinition, IconName } from '@fortawesome/fontawesome-svg-core';
-import { faEllipsis, faHandDots, faListDots, faSort } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { PopoverDirective } from '../popover/popover.directive';
-import { ButtonComponent } from '../button/button.component';
+} from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { IconDefinition, IconName } from "@fortawesome/fontawesome-svg-core";
+import {
+  faEllipsis,
+  faHandDots,
+  faListDots,
+  faSort,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { PopoverDirective } from "../popover/popover.directive";
+import { ButtonComponent } from "../button/button.component";
 import {
   BehaviorSubject,
   Observable,
@@ -29,11 +34,12 @@ import {
   toArray,
   reduce,
   mergeMap,
-} from 'rxjs';
-import { InputComponent } from '../input/input.component';
+  ReplaySubject,
+} from "rxjs";
+import { InputComponent } from "../input/input.component";
 
 @Component({
-  selector: 'is-data-table',
+  selector: "is-data-table",
   standalone: true,
   imports: [
     CommonModule,
@@ -43,60 +49,66 @@ import { InputComponent } from '../input/input.component';
     ButtonComponent,
     InputComponent,
   ],
-  templateUrl: './data-table.component.html',
-  styleUrls: ['./data-table.component.scss'],
+  templateUrl: "./data-table.component.html",
+  styleUrls: ["./data-table.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent {
   private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
-  @Input('headerTemplate') headerTemplate?: TemplateRef<any>;
-  @Input('footerTemplate') footerTemplate?: TemplateRef<any>;
-  @Input('data') data: any[] = [
+  @Input("headerTemplate") headerTemplate?: TemplateRef<any>;
+  @Input("footerTemplate") footerTemplate?: TemplateRef<any>;
+  @Input("data") data: any[] = [
     {
-      task: 'TASK-8782',
-      title: 'Try to calculate the EXE feed, maybe it will index the multi-byte pixel!',
-      status: 'B',
+      task: "TASK-8782",
+      title:
+        "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
+      status: "B",
     },
     {
-      task: 'TASK-7878',
-      title: 'We need to bypass the neural TCP card!',
-      status: 'A',
+      task: "TASK-7878",
+      title: "We need to bypass the neural TCP card!",
+      status: "A",
     },
     {
-      task: 'TASK-8686',
-      title: "I'll parse the wireless SSL protocol, that should driver the API panel!",
-      status: 'B',
+      task: "TASK-8686",
+      title:
+        "I'll parse the wireless SSL protocol, that should driver the API panel!",
+      status: "B",
     },
     {
-      task: 'TASK-8782',
-      title: 'Try to calculate the EXE feed, maybe it will index the multi-byte pixel!',
-      status: 'C',
+      task: "TASK-8782",
+      title:
+        "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
+      status: "C",
     },
     {
-      task: 'TASK-7878',
-      title: 'We need to bypass the neural TCP card!',
-      status: 'A',
+      task: "TASK-7878",
+      title: "We need to bypass the neural TCP card!",
+      status: "A",
     },
     {
-      task: 'TASK-8686',
-      title: "I'll parse the wireless SSL protocol, that should driver the API panel!",
-      status: 'D',
+      task: "TASK-8686",
+      title:
+        "I'll parse the wireless SSL protocol, that should driver the API panel!",
+      status: "D",
     },
     {
-      task: 'TASK-8782',
-      title: 'Try to calculate the EXE feed, maybe it will index the multi-byte pixel!',
-      status: 'B',
+      task: "TASK-8782",
+      title:
+        "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
+      status: "B",
     },
     {
-      task: 'TASK-7878',
-      title: 'We need to bypass the neural TCP card!',
-      status: 'S',
+      task: "TASK-7878",
+      title: "We need to bypass the neural TCP card!",
+      status: "S",
     },
     {
-      task: 'TASK-8686',
-      title: "I'll parse the wireless SSL protocol, that should driver the API panel!",
-      status: 'Y',
+      task: "TASK-8686",
+      title:
+        "I'll parse the wireless SSL protocol, that should driver the API panel!",
+      status: "Y",
     },
   ];
 
@@ -105,6 +117,7 @@ export class DataTableComponent {
   sort$: BehaviorSubject<null> = new BehaviorSubject<null>(null);
   filter$: BehaviorSubject<null> = new BehaviorSubject<null>(null);
   availableFilters$?: Observable<any>;
+  refetchFilters$: ReplaySubject<string> = new ReplaySubject<string>(1);
 
   ngOnInit(): void {
     // Transform field names to title case
@@ -123,15 +136,17 @@ export class DataTableComponent {
           this.data.sort((a, b) => {
             return a[this.fields[this.sortIndex].name.toLowerCase()] <
               b[this.fields[this.sortIndex].name.toLowerCase()]
-              ? this.sortOrder === 'ASC'
+              ? this.sortOrder === "ASC"
                 ? -1
                 : 1
-              : this.sortOrder === 'ASC'
+              : this.sortOrder === "ASC"
               ? 1
               : -1;
           });
         }
-        const filteredData = this.filterValues.size ? this.filterData(this.data) : this.data;
+        const filteredData = this.filterValues.size
+          ? this.filterData(this.data)
+          : this.data;
 
         return of(filteredData);
       }),
@@ -140,7 +155,7 @@ export class DataTableComponent {
   }
   actionIcon: IconDefinition = faEllipsis;
 
-  sortOrder?: 'ASC' | 'DESC';
+  sortOrder?: "ASC" | "DESC";
   tempSortIndex: number = -1;
   sortIndex: number = -1;
   actionIndex: number = -1;
@@ -153,12 +168,12 @@ export class DataTableComponent {
 
   filters: any[] = [
     {
-      name: 'Status',
-      type: 'status',
+      name: "Status",
+      type: "status",
     },
     {
-      name: 'Task',
-      type: 'task',
+      name: "Task",
+      type: "task",
     },
   ];
   filterValues: Map<string, Set<any>> = new Map<string, Set<any>>();
@@ -166,7 +181,7 @@ export class DataTableComponent {
 
   onTogglePopover(type: PopoverType, index?: number, filterType?: any): void {
     switch (type) {
-      case 'SORT':
+      case "SORT":
         // Toggle sort popover
         this.showTableHeadSorting =
           this.tempSortIndex !== index ? true : !this.showTableHeadSorting;
@@ -178,9 +193,10 @@ export class DataTableComponent {
         this.showFilter = false;
         this.filterIndex = -1;
         break;
-      case 'ACTION':
+      case "ACTION":
         // Toggle actions popover
-        this.showActions = this.actionIndex !== index ? true : !this.showActions;
+        this.showActions =
+          this.actionIndex !== index ? true : !this.showActions;
         this.actionIndex = index!;
         // Close all other popovers
         this.showTableHeadSorting = false;
@@ -189,7 +205,7 @@ export class DataTableComponent {
         this.showFilter = false;
         this.filterIndex = -1;
         break;
-      case 'TOGGLE_COLUMN':
+      case "TOGGLE_COLUMN":
         // Toggle columns popover
         this.showToggleColumns = !this.showToggleColumns;
         // Close all other popovers
@@ -200,7 +216,7 @@ export class DataTableComponent {
         this.showFilter = false;
         this.filterIndex = -1;
         break;
-      case 'FILTER':
+      case "FILTER":
         // Toggle columns popover
         this.showFilter = this.filterIndex !== index ? true : !this.showFilter;
         this.filterIndex = index!;
@@ -211,18 +227,24 @@ export class DataTableComponent {
         this.actionIndex = -1;
         this.showToggleColumns = false;
 
-        this.availableFilters$ = of(this.data).pipe(
-          map((data: any[]) => {
-            const uniques = new Set();
-            const uniqueData = data.reduce((arr: any, current: any) => {
-              if (!uniques.has(current[filterType])) {
-                arr.push(current);
-                uniques.add(current[filterType]);
-              }
-              return arr;
-            }, []);
-            return uniqueData.map((x: any) => x[filterType]);
-          })
+        this.availableFilters$ = this.refetchFilters$.pipe(
+          switchMap((activeFilterValue: string) =>
+            of(this.data).pipe(
+              map((data: any[]) => {
+                const uniques = new Set();
+                const uniqueData = data.reduce((arr: any, current: any) => {
+                  if (!uniques.has(current[filterType])) {
+                    arr.push(current);
+                    uniques.add(current[filterType]);
+                  }
+                  return arr;
+                }, []);
+                return uniqueData
+                  .map((x: any) => x[filterType])
+                  .filter((fieldValue: any) => fieldValue === activeFilterValue);
+              })
+            )
+          )
         );
         break;
       default:
@@ -230,7 +252,7 @@ export class DataTableComponent {
     }
   }
 
-  onSortTableRows(order: 'ASC' | 'DESC'): void {
+  onSortTableRows(order: "ASC" | "DESC"): void {
     this.sortOrder = order;
     this.sortIndex = this.tempSortIndex;
     this.sort$.next(null);
@@ -255,6 +277,12 @@ export class DataTableComponent {
     this.filter$.next(null);
   }
 
+  onFilterAutocomplete(inputValue: string): void {
+    this.refetchFilters$.next(inputValue);
+    console.log("FILTER");
+    console.log(inputValue);
+  }
+
   private addFilter(key: string, value: any): void {
     if (!this.filterValues.has(key)) {
       this.filterValues.set(key, new Set<any>());
@@ -273,8 +301,8 @@ export class DataTableComponent {
   }
 
   private filterData(data: any[]): any {
-    const activeFiltersValues = Array.from(this.filterValues.values()).flatMap((x) =>
-      Array.from(x)
+    const activeFiltersValues = Array.from(this.filterValues.values()).flatMap(
+      (x) => Array.from(x)
     );
     const activeFilterKeys = Array.from(this.filterValues.keys());
 
@@ -289,4 +317,4 @@ export class DataTableComponent {
   }
 }
 
-export type PopoverType = 'SORT' | 'ACTION' | 'TOGGLE_COLUMN' | 'FILTER';
+export type PopoverType = "SORT" | "ACTION" | "TOGGLE_COLUMN" | "FILTER";
