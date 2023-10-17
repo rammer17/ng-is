@@ -33,11 +33,11 @@ export class AppComponent {
     console.log('test');
   }
   
-  // ngOnInit() {
-  //   setTimeout(() => {
-  //     console.log(this.a);
-  //   }, 4000);
-  // }
+  ngOnInit() {
+    setTimeout(() => {
+      console.log(this.a);
+    }, 4000);
+  }
 
   constructor(library: FaIconLibrary) {
     library.addIconPacks(fas, far);

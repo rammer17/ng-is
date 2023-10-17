@@ -6,7 +6,6 @@ import {
   Input,
   Output,
   ViewChild,
-  ViewEncapsulation,
   forwardRef,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -31,7 +30,6 @@ import {
         [type]="type"
         [placeholder]="placeholder"
         title=""
-        (input)="registerOnChange($event)"
         [checked]="checked"
         [ngModel]="value"
         (ngModelChange)="onInputChange($event)"
@@ -200,24 +198,19 @@ export class InputComponent implements ControlValueAccessor {
   @Input("iconColor") iconColor?: string;
   @Input("iconSize") iconSize?: "2xs" | "xs" | "sm" | "lg" | "xl" | "2xl";
   @Input("ghost") ghost: boolean = false;
-
-  @Output("onChange") onChange: EventEmitter<any> = new EventEmitter<any>();
+  @Input("checked") checked: boolean = false;
+  @Output("onChange") onValueChange: EventEmitter<any> =
+    new EventEmitter<any>();
 
   @ViewChild("input") input?: ElementRef<HTMLInputElement>;
 
-  @Input("checked") checked: boolean = false;
-
-  onValueChange: any = () => {};
+  onChange: any = () => {};
   onTouched: any = () => {};
 
   inputClass(): Object {
     return {
       "is-input": true,
     };
-  }
-
-  ngOnInit() {
-    // if(this.type === 'checkbox') {this.onInputChange(this.checked)}
   }
 
   wrapperClass(): Object {
@@ -246,12 +239,8 @@ export class InputComponent implements ControlValueAccessor {
     }
   }
 
-  registerOnChange(event: Event): void {
-    this.onChange.emit(event);
-  }
-
-  registerOnValueChange(fn: any): void {
-    this.onValueChange = fn;
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
   }
 
   registerOnTouched(fn: any): void {
@@ -264,8 +253,9 @@ export class InputComponent implements ControlValueAccessor {
       value = this.checked;
     }
     this.value = value;
-    this.onValueChange(value);
+    this.onChange(value);
     this.onTouched();
+    this.onValueChange.emit(value);
   }
 }
 

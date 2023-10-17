@@ -8,32 +8,19 @@ import {
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { IconDefinition, IconName } from "@fortawesome/fontawesome-svg-core";
-import {
-  faEllipsis,
-  faHandDots,
-  faListDots,
-  faSort,
-} from "@fortawesome/free-solid-svg-icons";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { PopoverDirective } from "../popover/popover.directive";
 import { ButtonComponent } from "../button/button.component";
 import {
   BehaviorSubject,
   Observable,
-  Subject,
-  from,
   merge,
   of,
   switchMap,
   map,
   shareReplay,
-  tap,
-  distinct,
-  concatMap,
-  toArray,
-  reduce,
-  mergeMap,
   ReplaySubject,
 } from "rxjs";
 import { InputComponent } from "../input/input.component";
@@ -102,7 +89,7 @@ export class DataTableComponent {
     {
       task: "TASK-7878",
       title: "We need to bypass the neural TCP card!",
-      status: "S",
+      status: "AB",
     },
     {
       task: "TASK-8686",
@@ -114,8 +101,8 @@ export class DataTableComponent {
 
   fields: any;
   data$?: Observable<any>;
-  sort$: BehaviorSubject<null> = new BehaviorSubject<null>(null);
-  filter$: BehaviorSubject<null> = new BehaviorSubject<null>(null);
+  sortAction$: BehaviorSubject<null> = new BehaviorSubject<null>(null);
+  filterAction$: BehaviorSubject<null> = new BehaviorSubject<null>(null);
   availableFilters$?: Observable<any>;
   refetchFilters$: ReplaySubject<string> = new ReplaySubject<string>(1);
 
@@ -130,7 +117,7 @@ export class DataTableComponent {
       };
     });
 
-    this.data$ = merge(this.sort$, this.filter$).pipe(
+    this.data$ = merge(this.sortAction$, this.filterAction$).pipe(
       switchMap(() => {
         if (this.sortIndex !== -1) {
           this.data.sort((a, b) => {
@@ -241,7 +228,9 @@ export class DataTableComponent {
                 }, []);
                 return uniqueData
                   .map((x: any) => x[filterType])
-                  .filter((fieldValue: any) => fieldValue === activeFilterValue);
+                  .filter((fieldValue: any) => {
+                    return fieldValue === activeFilterValue;
+                  });
               })
             )
           )
@@ -255,7 +244,7 @@ export class DataTableComponent {
   onSortTableRows(order: "ASC" | "DESC"): void {
     this.sortOrder = order;
     this.sortIndex = this.tempSortIndex;
-    this.sort$.next(null);
+    this.sortAction$.next(null);
     this.showTableHeadSorting = false;
   }
 
@@ -274,13 +263,20 @@ export class DataTableComponent {
 
     if (this.activeFilters[key]) this.addFilter(value.type, key);
 
-    this.filter$.next(null);
+    this.filterAction$.next(null);
   }
 
   onFilterAutocomplete(inputValue: string): void {
     this.refetchFilters$.next(inputValue);
-    console.log("FILTER");
-    console.log(inputValue);
+  }
+
+  onFilterAutocompleteNew(inputValue: string): void {
+    this.refetchFilters$.next(inputValue);
+  }
+
+  onFilterChangeNew(filter: any, value: any): void {
+    console.log(filter)
+    console.log(value)
   }
 
   private addFilter(key: string, value: any): void {
@@ -308,11 +304,11 @@ export class DataTableComponent {
 
     return data.filter((x: any) => {
       for (let index = 0; index < activeFilterKeys.length; index++) {
-        if (!activeFiltersValues.includes(x[activeFilterKeys[index]])) {
-          return false;
-        }
+        return !!(x[activeFilterKeys[index]] as string).includes(
+          activeFiltersValues[index]
+        );
       }
-      return true;
+      return;
     });
   }
 }

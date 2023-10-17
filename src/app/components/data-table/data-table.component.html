@@ -158,7 +158,7 @@
   </div>
 </ng-template>
 
-<ng-template #filterTemplate let-filter>
+<ng-template #filterTemplateOrigina let-filter>
   <div class="filter-options-container">
     <div class="search-bar">
       <is-input
@@ -172,24 +172,70 @@
         [icon]="'search'"
       ></is-input>
       <div class="divider"></div>
-      <ng-container *ngIf="availableFilters$ | async as availableFilters; else noAvailableFilters">
-        <div
-          *ngFor="let option of availableFilters; let i = index"
-          class="filter-options"
-        >
-          <is-input
-            [(ngModel)]="activeFilters[option]"
-            [checked]="activeFilters[option]"
-            (change)="onFilterChange(option, filter)"
-            [type]="'checkbox'"
-          ></is-input>
-          <fa-icon [icon]="['far', 'circle']"></fa-icon>
-          <span>{{ option }}</span>
-        </div>
+      <ng-container
+        *ngIf="
+          availableFilters$ | async as availableFilters;
+          else noAvailableFilters
+        "
+      >
+        <ng-container *ngIf="availableFilters.length; else noAvailableFilters">
+          <div
+            *ngFor="let option of availableFilters; let i = index"
+            class="filter-options"
+          >
+            <is-input
+              [(ngModel)]="activeFilters[option]"
+              [checked]="activeFilters[option]"
+              (change)="onFilterChange(option, filter)"
+              [type]="'checkbox'"
+            ></is-input>
+            <fa-icon [icon]="['far', 'circle']"></fa-icon>
+            <span>{{ option }}</span>
+          </div>
+        </ng-container>
       </ng-container>
-      <ng-template #noAvailableFilters>
-        No Values Available!
-      </ng-template>
+      <ng-template #noAvailableFilters>No Values Available!</ng-template>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #filterTemplate let-filter>
+  <div class="filter-options-container">
+    <div class="search-bar">
+      <is-input
+        #filterAutocompleteInput
+        (onChange)="onFilterAutocompleteNew(filterAutocompleteInput.value)"
+        [placeholder]="filter.name"
+        [type]="'text'"
+        [ghost]="true"
+        [iconSize]="'sm'"
+        [iconColor]="'hsl(var(--muted-foreground))'"
+        [icon]="'search'"
+      ></is-input>
+      <div class="divider"></div>
+      <ng-container
+        *ngIf="
+          availableFilters$ | async as availableFilters;
+          else noAvailableFilters
+        "
+      >
+        <ng-container *ngIf="availableFilters.length; else noAvailableFilters">
+          <div
+            *ngFor="let option of availableFilters; let i = index"
+            class="filter-options"
+          >
+            <is-input
+              [(ngModel)]="activeFilters[option]"
+              [checked]="activeFilters[option]"
+              (change)="onFilterChangeNew(filter, option)"
+              [type]="'checkbox'"
+            ></is-input>
+            <fa-icon [icon]="['far', 'circle']"></fa-icon>
+            <span>{{ option }}</span>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-template #noAvailableFilters>No Values Available!</ng-template>
     </div>
   </div>
 </ng-template>

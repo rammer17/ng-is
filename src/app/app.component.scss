@@ -7,12 +7,12 @@
 }
 .playground {
   width: 100vw;
-  height: 100vh;
+  height: 2000px;
   display: flex;
   justify-content: center;
   // align-items: center;
-  // background-color: rgb(0, 106, 255);
-  background-color: hsl(var(--background));
+  background-color: rgb(188, 188, 188);
+  // background-color: hsl(var(--background));
   .a {
     margin-top: 20rem;
   }
