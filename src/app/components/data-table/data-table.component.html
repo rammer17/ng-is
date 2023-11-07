@@ -1,29 +1,21 @@
 <div class="data-table-wrapper">
-  <ng-container
-    *ngTemplateOutlet="headerTemplate || defaultHeaderTemplate"
-  ></ng-container>
+  <ng-container *ngTemplateOutlet="headerTemplate || defaultHeaderTemplate"></ng-container>
   <div class="rounded-table-border">
     <table>
       <thead>
         <tr>
           <th><is-input [type]="'checkbox'"></is-input></th>
           <ng-container *ngFor="let fieldType of fields; let i = index">
-            <th
-              *ngIf="fieldType.showInTable"
-              [ngClass]="{ sort: fieldType.showInTable }"
-            >
+            <th *ngIf="fieldType.showInTable" [ngClass]="{ sort: fieldType.showInTable }">
               <div
                 class="sort-wrapper"
                 [ngClass]="{ 'sort-wrapper-hover': fieldType.sort }"
-                [isPopover]="
-                  showTableHeadSorting && tempSortIndex === i && fieldType.sort
-                "
+                [isPopover]="showTableHeadSorting && tempSortIndex === i && fieldType.sort"
                 [appendTo]="'body'"
                 [position]="'bottom'"
                 [template]="tableHeadSortTemplate"
                 [templateContext]="i"
-                (click)="onTogglePopover('SORT', i)"
-              >
+                (click)="onTogglePopover('SORT', i)">
                 <span>{{ fieldType.name }}</span>
                 <fa-icon
                   *ngIf="fieldType.sort"
@@ -34,8 +26,7 @@
                       : sortOrder === 'DESC' && sortIndex === i
                       ? 'sort-down'
                       : 'sort'
-                  ]"
-                ></fa-icon>
+                  ]"></fa-icon>
               </div>
             </th>
           </ng-container>
@@ -55,18 +46,15 @@
               [icon]="actionIcon"
               (click)="onTogglePopover('ACTION', i)"
               [isPopover]="showActions && actionIndex === i"
-              [position]="'bottom'"
+              [position]="'bottom-inline-right'"
               [appendTo]="'body'"
-              [template]="actionsTemplate"
-            ></fa-icon>
+              [template]="actionsTemplate"></fa-icon>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
-  <ng-container
-    *ngTemplateOutlet="footerTemplate || defaultFooterTemplate"
-  ></ng-container>
+  <ng-container *ngTemplateOutlet="footerTemplate || defaultFooterTemplate"></ng-container>
 </div>
 
 <ng-template #actionsTemplate>
@@ -99,15 +87,11 @@
 <ng-template #defaultHeaderTemplate>
   <div class="default-header-template">
     <div class="header-filters">
-      <is-input
-        [type]="'text'"
-        [icon]="'search'"
-        [placeholder]="'Filter'"
-      ></is-input>
+      <is-input [type]="'text'" [icon]="'search'" [placeholder]="'Filter'"></is-input>
       <is-button
         *ngFor="let filter of filters; let i = index"
         [isPopover]="showFilter && filterIndex === i"
-        [position]="'bottom'"
+        [position]="'bottom-inline-left'"
         [appendTo]="'body'"
         [template]="filterTemplate"
         [templateContext]="filter"
@@ -115,28 +99,36 @@
         [label]="filter.name"
         [styleClass]="['outlined', 'dashed']"
         [type]="'button'"
-        [icon]="'filter'"
-      >
-        <div class="filter-values">
+        [icon]="'filter'">
+        <div class="filter-values" *ngIf="activeFilter$ | async as activeFilters">
           <div class="vertical-divider"></div>
-          A, B
+          <ng-container *ngFor="let activeFilter of activeFilters; let i = index">
+            <div class="active-filter-container" *ngIf="activeFilter[filter.type]">
+              <span style="cursor: pointer">
+                {{ activeFilter[filter.type] }}
+              </span>
+            </div>
+          </ng-container>
+          <ng-template #activeFiltersNumber>
+            <div class="active-filter-container">
+              <span>{{ activeFilters?.length }} selected</span>
+            </div>
+          </ng-template>
         </div>
       </is-button>
     </div>
     <div
       class="header-view"
       [isPopover]="showToggleColumns"
-      [position]="'bottom'"
+      [position]="'bottom-inline-right'"
       [appendTo]="'body'"
-      [template]="toggleColumnsTemplate"
-    >
+      [template]="toggleColumnsTemplate">
       <is-button
         (onClick)="onTogglePopover('TOGGLE_COLUMN')"
         [type]="'button'"
         [styleClass]="['outlined']"
         [label]="'View'"
-        [icon]="'sliders'"
-      ></is-button>
+        [icon]="'sliders'"></is-button>
     </div>
   </div>
 </ng-template>
@@ -148,17 +140,14 @@
     <div
       *ngFor="let column of fields; let i = index"
       class="table-columns"
-      (click)="onToggleTableField(i)"
-    >
-      <fa-icon
-        [icon]="['far', column.showInTable ? 'circle-check' : 'circle-xmark']"
-      ></fa-icon>
+      (click)="onToggleTableField(i)">
+      <fa-icon [icon]="['far', column.showInTable ? 'circle-check' : 'circle-xmark']"></fa-icon>
       {{ column.name }}
     </div>
   </div>
 </ng-template>
 
-<ng-template #filterTemplateOrigina let-filter>
+<ng-template #filterTemplate let-filter>
   <div class="filter-options-container">
     <div class="search-bar">
       <is-input
@@ -169,73 +158,27 @@
         [ghost]="true"
         [iconSize]="'sm'"
         [iconColor]="'hsl(var(--muted-foreground))'"
-        [icon]="'search'"
-      ></is-input>
+        [icon]="'search'"></is-input>
       <div class="divider"></div>
-      <ng-container
-        *ngIf="
-          availableFilters$ | async as availableFilters;
-          else noAvailableFilters
-        "
-      >
-        <ng-container *ngIf="availableFilters.length; else noAvailableFilters">
-          <div
-            *ngFor="let option of availableFilters; let i = index"
-            class="filter-options"
-          >
-            <is-input
-              [(ngModel)]="activeFilters[option]"
-              [checked]="activeFilters[option]"
-              (change)="onFilterChange(option, filter)"
-              [type]="'checkbox'"
-            ></is-input>
-            <fa-icon [icon]="['far', 'circle']"></fa-icon>
-            <span>{{ option }}</span>
+      <ng-container *ngIf="availableFilter$ | async as availableFilters; else noAvailableFilters">
+        <ng-container *ngIf="availableFilters?.length > 1; else noAvailableFilters">
+          <div *ngFor="let option of availableFilters; let i = index" class="filter-options">
+            <ng-container *ngIf="option && option?.length">
+              <ng-container *ngIf="activeFilter$ | async as activeFilterObs">
+                <is-input
+                  (change)="onFilterChange(option, filter.type)"
+                  [type]="'checkbox'"
+                  [checked]="determineIfFilterIsChecked(activeFilterObs, option)"></is-input>
+              </ng-container>
+              <fa-icon [icon]="['far', 'circle']"></fa-icon>
+              <span>{{ option }}</span>
+            </ng-container>
           </div>
         </ng-container>
       </ng-container>
-      <ng-template #noAvailableFilters>No Values Available!</ng-template>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #filterTemplate let-filter>
-  <div class="filter-options-container">
-    <div class="search-bar">
-      <is-input
-        #filterAutocompleteInput
-        (onChange)="onFilterAutocompleteNew(filterAutocompleteInput.value)"
-        [placeholder]="filter.name"
-        [type]="'text'"
-        [ghost]="true"
-        [iconSize]="'sm'"
-        [iconColor]="'hsl(var(--muted-foreground))'"
-        [icon]="'search'"
-      ></is-input>
-      <div class="divider"></div>
-      <ng-container
-        *ngIf="
-          availableFilters$ | async as availableFilters;
-          else noAvailableFilters
-        "
-      >
-        <ng-container *ngIf="availableFilters.length; else noAvailableFilters">
-          <div
-            *ngFor="let option of availableFilters; let i = index"
-            class="filter-options"
-          >
-            <is-input
-              [(ngModel)]="activeFilters[option]"
-              [checked]="activeFilters[option]"
-              (change)="onFilterChangeNew(filter, option)"
-              [type]="'checkbox'"
-            ></is-input>
-            <fa-icon [icon]="['far', 'circle']"></fa-icon>
-            <span>{{ option }}</span>
-          </div>
-        </ng-container>
-      </ng-container>
-      <ng-template #noAvailableFilters>No Values Available!</ng-template>
+      <ng-template #noAvailableFilters>
+        <div class="no-results">No results found.</div>
+      </ng-template>
     </div>
   </div>
 </ng-template>

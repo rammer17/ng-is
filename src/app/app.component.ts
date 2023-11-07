@@ -35,7 +35,7 @@ export class AppComponent {
   
   ngOnInit() {
     setTimeout(() => {
-      console.log(this.a);
+      // console.log(this.a);
     }, 4000);
   }
 

@@ -70,6 +70,7 @@ div.data-table-wrapper {
         padding: 1rem;
       }
       td.action-trigger {
+        text-align: center;
         fa-icon {
           transition-duration: 0.15s;
           transition-property: background-color, color;
@@ -132,6 +133,10 @@ div.filter-options-container {
     input[type="checkbox"] {
       display: inline-block;
     }
+    div.no-results {
+      text-align: center;
+      padding: 0.75rem 1rem;
+    }
   }
   div.filter-options {
     display: flex;
@@ -150,11 +155,16 @@ div.default-header-template {
       justify-content: space-around;
       gap: 0.25rem;
       // align-items: center;
-    }
-    div.vertical-divider {
-      margin-left: 0.25rem;
-      width: 1px;
-      background-color: hsl(var(--border));
+      div.vertical-divider {
+        margin-left: 0.25rem;
+        width: 1px;
+        background-color: hsl(var(--border));
+      }
+      div.active-filter-container {
+        padding: 0.125rem 0.25rem;
+        border-radius: calc(0.5rem - 4px);
+        background-color: hsl(var(--secondary));
+      }
     }
   }
 }

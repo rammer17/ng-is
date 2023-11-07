@@ -37,7 +37,15 @@ export class PopoverDirective {
   @Input('isPopover') showPopover: boolean = true;
   @Input('template') popoverTemplate?: any;
   @Input('templateContext') popoverTemplateContext?: any;
-  @Input('position') position: 'left' | 'right' | 'top' | 'bottom' = 'top';
+  @Input('position') position:
+    | 'left'
+    | 'right'
+    | 'top'
+    | 'bottom'
+    | 'top-inline-left'
+    | 'top-inline-right'
+    | 'bottom-inline-left'
+    | 'bottom-inline-right' = 'top';
   @Input('animationDuration') animationDuration: number = 150;
 
   private _popoverComponentRef?: ComponentRef<PopoverComponent>;
@@ -63,10 +71,14 @@ export class PopoverDirective {
     //Set direction from which the popover appears depending on its position
     switch (this.position) {
       case 'top':
+      case 'top-inline-left':
+      case 'top-inline-right':
         translateDir = 'Y';
         translateVal = '';
         break;
       case 'bottom':
+      case 'bottom-inline-left':
+      case 'bottom-inline-right':
         translateDir = 'Y';
         translateVal = '-';
         break;
@@ -192,7 +204,15 @@ class PopoverComponent {
 
   template!: TemplateRef<any>;
   context?: object;
-  position: 'left' | 'right' | 'top' | 'bottom' = 'top';
+  position:
+    | 'left'
+    | 'right'
+    | 'top'
+    | 'bottom'
+    | 'top-inline-left'
+    | 'top-inline-right'
+    | 'bottom-inline-left'
+    | 'bottom-inline-right' = 'top';
   target!: HTMLElement;
 
   showLeaveAnimation: boolean = true;
@@ -247,6 +267,26 @@ class PopoverComponent {
       case 'right':
         x = targetRect.left + targetRect.width;
         y = targetRect.top + targetRect.height / 2 - popoverRect.height / 2;
+        break;
+
+      case 'bottom-inline-left':
+        x = targetRect.left;
+        y = targetRect.bottom;
+        break;
+
+      case 'bottom-inline-right':
+        x = targetRect.right - popoverRect.width;
+        y = targetRect.bottom;
+        break;
+
+      case 'top-inline-left':
+        x = targetRect.left;
+        y = targetRect.top - popoverRect.height;
+        break;
+
+      case 'top-inline-right':
+        x = targetRect.right - popoverRect.width;
+        y = targetRect.top - popoverRect.height;
         break;
 
       default:
