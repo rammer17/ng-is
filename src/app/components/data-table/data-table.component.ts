@@ -5,14 +5,14 @@ import {
   Input,
   TemplateRef,
   inject,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import { faEllipsis } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { PopoverDirective } from '../popover/popover.directive';
-import { ButtonComponent } from '../button/button.component';
+} from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { PopoverDirective } from "../popover/popover.directive";
+import { ButtonComponent } from "../button/button.component";
 import {
   BehaviorSubject,
   Observable,
@@ -30,11 +30,11 @@ import {
   scan,
   startWith,
   combineLatest,
-} from 'rxjs';
-import { InputComponent } from '../input/input.component';
+} from "rxjs";
+import { InputComponent } from "../input/input.component";
 
 @Component({
-  selector: 'is-data-table',
+  selector: "is-data-table",
   standalone: true,
   imports: [
     CommonModule,
@@ -44,69 +44,75 @@ import { InputComponent } from '../input/input.component';
     ButtonComponent,
     InputComponent,
   ],
-  templateUrl: './data-table.component.html',
-  styleUrls: ['./data-table.component.scss'],
+  templateUrl: "./data-table.component.html",
+  styleUrls: ["./data-table.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DataTableComponent {
   private readonly cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
 
-  @Input('headerTemplate') headerTemplate?: TemplateRef<any>;
-  @Input('footerTemplate') footerTemplate?: TemplateRef<any>;
-  @Input('data') data: any[] = [
+  @Input("headerTemplate") headerTemplate?: TemplateRef<any>;
+  @Input("footerTemplate") footerTemplate?: TemplateRef<any>;
+  @Input("data") data: any[] = [
     {
-      task: 'TASK-8782',
-      title: 'Try to calculate the EXE feed, maybe it will index the multi-byte pixel!',
-      status: 'B',
+      task: "TASK-8782",
+      title:
+        "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
+      status: "B",
     },
     {
-      task: 'TASK-7878',
-      title: 'We need to bypass the neural TCP card!',
-      status: 'A',
+      task: "TASK-7878",
+      title: "We need to bypass the neural TCP card!",
+      status: "A",
     },
     {
-      task: 'TASK-8686',
-      title: "I'll parse the wireless SSL protocol, that should driver the API panel!",
-      status: 'B',
+      task: "TASK-8686",
+      title:
+        "I'll parse the wireless SSL protocol, that should driver the API panel!",
+      status: "B",
     },
     {
-      task: 'TASK-8782',
-      title: 'Try to calculate the EXE feed, maybe it will index the multi-byte pixel!',
-      status: 'C',
+      task: "TASK-8782",
+      title:
+        "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
+      status: "C",
     },
     {
-      task: 'TASK-7878',
-      title: 'We need to bypass the neural TCP card!',
-      status: 'A',
+      task: "TASK-7878",
+      title: "We need to bypass the neural TCP card!",
+      status: "A",
     },
     {
-      task: 'TASK-8686',
-      title: "I'll parse the wireless SSL protocol, that should driver the API panel!",
-      status: 'D',
+      task: "TASK-8686",
+      title:
+        "I'll parse the wireless SSL protocol, that should driver the API panel!",
+      status: "D",
     },
     {
-      task: 'TASK-8782',
-      title: 'Try to calculate the EXE feed, maybe it will index the multi-byte pixel!',
-      status: 'B',
+      task: "TASK-8782",
+      title:
+        "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
+      status: "B",
     },
     {
-      task: 'TASK-7878',
-      title: 'We need to bypass the neural TCP card!',
-      status: 'AB',
+      task: "TASK-7878",
+      title: "We need to bypass the neural TCP card!",
+      status: "AB",
     },
     {
-      task: 'TASK-8686',
-      title: "I'll parse the wireless SSL protocol, that should driver the API panel!",
-      status: 'Y',
+      task: "TASK-8686",
+      title:
+        "I'll parse the wireless SSL protocol, that should driver the API panel!",
+      status: "Y",
     },
   ];
 
   fields: any;
   data$?: Observable<any>;
   sortAction$: BehaviorSubject<null> = new BehaviorSubject<null>(null);
-  filterAction$: BehaviorSubject<null> = new BehaviorSubject<null>(null);
+  filterAction$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   availableFilters$?: Observable<any>;
-  refetchFilters$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  refetchFilters$: BehaviorSubject<string> = new BehaviorSubject<string>("");
 
   ngOnInit(): void {
     // Transform field names to title case
@@ -120,22 +126,27 @@ export class DataTableComponent {
     });
 
     this.data$ = merge(this.sortAction$, this.filterAction$).pipe(
-      switchMap(() => {
+      switchMap((currentActiveFilters: object[]) => {
         if (this.sortIndex !== -1) {
           this.data.sort((a, b) => {
             return a[this.fields[this.sortIndex].name.toLowerCase()] <
               b[this.fields[this.sortIndex].name.toLowerCase()]
-              ? this.sortOrder === 'ASC'
+              ? this.sortOrder === "ASC"
                 ? -1
                 : 1
-              : this.sortOrder === 'ASC'
+              : this.sortOrder === "ASC"
               ? 1
               : -1;
           });
         }
-        return of(this.data);
 
-        const filteredData = this.filterValues.size ? this.filterData(this.data) : this.data;
+        // console.log(currentActiveFilters);
+
+        // return of(this.data);
+
+        const filteredData = currentActiveFilters?.length
+          ? this.filterData(this.data, currentActiveFilters)
+          : this.data;
 
         return of(filteredData);
       })
@@ -143,7 +154,7 @@ export class DataTableComponent {
   }
   actionIcon: IconDefinition = faEllipsis;
 
-  sortOrder?: 'ASC' | 'DESC';
+  sortOrder?: "ASC" | "DESC";
   tempSortIndex: number = -1;
   sortIndex: number = -1;
   actionIndex: number = -1;
@@ -156,12 +167,12 @@ export class DataTableComponent {
 
   filters: any[] = [
     {
-      name: 'Status',
-      type: 'status',
+      name: "Status",
+      type: "status",
     },
     {
-      name: 'Task',
-      type: 'task',
+      name: "Task",
+      type: "task",
     },
   ];
 
@@ -170,7 +181,7 @@ export class DataTableComponent {
 
   onTogglePopover(type: PopoverType, index?: number, filterType?: any): void {
     switch (type) {
-      case 'SORT':
+      case "SORT":
         // Toggle sort popover
         this.showTableHeadSorting =
           this.tempSortIndex !== index ? true : !this.showTableHeadSorting;
@@ -182,9 +193,10 @@ export class DataTableComponent {
         this.showFilter = false;
         this.filterIndex = -1;
         break;
-      case 'ACTION':
+      case "ACTION":
         // Toggle actions popover
-        this.showActions = this.actionIndex !== index ? true : !this.showActions;
+        this.showActions =
+          this.actionIndex !== index ? true : !this.showActions;
         this.actionIndex = index!;
         // Close all other popovers
         this.showTableHeadSorting = false;
@@ -193,7 +205,7 @@ export class DataTableComponent {
         this.showFilter = false;
         this.filterIndex = -1;
         break;
-      case 'TOGGLE_COLUMN':
+      case "TOGGLE_COLUMN":
         // Toggle columns popover
         this.showToggleColumns = !this.showToggleColumns;
         // Close all other popovers
@@ -204,7 +216,7 @@ export class DataTableComponent {
         this.showFilter = false;
         this.filterIndex = -1;
         break;
-      case 'FILTER':
+      case "FILTER":
         // Toggle columns popover
         this.showFilter = this.filterIndex !== index ? true : !this.showFilter;
         this.filterIndex = index!;
@@ -216,7 +228,7 @@ export class DataTableComponent {
         this.showToggleColumns = false;
 
         //Reset input value
-        this.refetchFilters$.next('');
+        this.refetchFilters$.next("");
 
         // Get all available distinct values for filtering based on the input data
         this.availableFilter$ = combineLatest([
@@ -226,7 +238,10 @@ export class DataTableComponent {
               from(this.data).pipe(
                 distinct((x: any) => x[filterType]),
                 filter((x: any) =>
-                  this.doesValueContainFilterInputValue(x[filterType], filterInputValue)
+                  this.doesValueContainFilterInputValue(
+                    x[filterType],
+                    filterInputValue
+                  )
                 ),
                 map((x: any) => x[filterType]),
                 toArray()
@@ -243,7 +258,7 @@ export class DataTableComponent {
     }
   }
 
-  onSortTableRows(order: 'ASC' | 'DESC'): void {
+  onSortTableRows(order: "ASC" | "DESC"): void {
     this.sortOrder = order;
     this.sortIndex = this.tempSortIndex;
     this.sortAction$.next(null);
@@ -264,9 +279,8 @@ export class DataTableComponent {
   }
 
   onFilterChange(filterValue: any, filterType: string): void {
-    console.log(filterType);
+    // console.log(filterType);
     this.activeFilterSource$.next({ [filterType]: filterValue });
-    this.filterAction$.next(null);
   }
 
   availableFilter$?: Observable<any>;
@@ -275,44 +289,77 @@ export class DataTableComponent {
     scan(
       (accumulator: any[], currentValue: any) => {
         return accumulator.some(
-          (e) => e[Object.keys(currentValue)[0]] === Object.values(currentValue)[0]
+          (e) =>
+            e[Object.keys(currentValue)[0]] === Object.values(currentValue)[0]
         )
           ? [
               ...accumulator.filter(
                 (x: any) =>
-                  Object.keys(x).length && Object.values(x)[0] !== Object.values(currentValue)[0]
+                  Object.keys(x).length &&
+                  Object.values(x)[0] !== Object.values(currentValue)[0]
               ),
             ]
-          : [...accumulator.filter((x: any) => Object.keys(x).length), currentValue];
+          : [
+              ...accumulator.filter((x: any) => Object.keys(x).length),
+              currentValue,
+            ];
       },
       [{}]
     ),
+    tap((x) => {
+      // console.log(x);
+      this.filterAction$.next(x);
+    }),
     startWith([]),
     shareReplay(1)
-    // tap((x) => console.log(x))
   );
 
-  determineIfFilterIsChecked(activeFiltersArr: object[], filterToCheck: any): boolean {
+  determineIfFilterIsChecked(
+    activeFiltersArr: object[],
+    filterToCheck: any
+  ): boolean {
     return activeFiltersArr.some((e) => Object.values(e)[0] === filterToCheck);
   }
 
-  private doesValueContainFilterInputValue(string: string, substring: string): boolean {
+  private doesValueContainFilterInputValue(
+    string: string,
+    substring: string
+  ): boolean {
     return string.toLowerCase().includes(substring.toLowerCase());
   }
 
-  private filterData(data: any[]): any {
-    const activeFiltersValues = Array.from(this.filterValues.values()).flatMap((x) =>
-      Array.from(x)
-    );
-    const activeFilterKeys = Array.from(this.filterValues.keys());
+  private filterData(data: any[], currentActiveFilters: any[]): any {
+    let filteredData: any[] = data;
 
-    return data.filter((x: any) => {
-      for (let index = 0; index < activeFilterKeys.length; index++) {
-        return !!(x[activeFilterKeys[index]] as string).includes(activeFiltersValues[index]);
-      }
-      return;
+    currentActiveFilters.forEach((activeFilter: any) => {
+      filteredData = filteredData.filter(
+        (value: any) =>
+          value[Object.keys(activeFilter)[0]] === Object.values(activeFilter)[0]
+      );
     });
+
+    console.log(filteredData);
+
+
+    // fetch('nfs.faireconomy.media/ff_calendar_thisweek.json')
+    // .then(resp => resp.json())
+    // .then(resp => console.log(resp))
+
+    return filteredData;
+
+    // const activeFiltersValues = Array.from(this.filterValues.values()).flatMap(
+    //   (x) => Array.from(x)
+    // );
+    // const activeFilterKeys = Array.from(this.filterValues.keys());
+    // return data.filter((x: any) => {
+    //   for (let index = 0; index < activeFilterKeys.length; index++) {
+    //     return !!(x[activeFilterKeys[index]] as string).includes(
+    //       activeFiltersValues[index]
+    //     );
+    //   }
+    //   return;
+    // });
   }
 }
 
-export type PopoverType = 'SORT' | 'ACTION' | 'TOGGLE_COLUMN' | 'FILTER';
+export type PopoverType = "SORT" | "ACTION" | "TOGGLE_COLUMN" | "FILTER";
