@@ -268,7 +268,7 @@ export class DataTableComponent {
   onToggleTableField(index: number): void {
     this.showTableHeadSorting = false;
     this.tempSortIndex = -1;
-    this.showToggleColumns = false;
+    // this.showToggleColumns = false;
     this.cdr.detectChanges();
     this.fields[index].showInTable = !this.fields[index].showInTable;
     this.cdr.detectChanges();
@@ -331,34 +331,19 @@ export class DataTableComponent {
   private filterData(data: any[], currentActiveFilters: any[]): any {
     let filteredData: any[] = data;
 
+    const allActiveFilterValues = [
+      ...new Set(currentActiveFilters.map((x) => Object.values(x)[0])),
+    ];
+
     currentActiveFilters.forEach((activeFilter: any) => {
-      filteredData = filteredData.filter(
-        (value: any) =>
-          value[Object.keys(activeFilter)[0]] === Object.values(activeFilter)[0]
-      );
+      filteredData = filteredData.filter((value: any) => {
+        return allActiveFilterValues.includes(
+          value[Object.keys(activeFilter)[0]]
+        );
+      });
     });
 
-    console.log(filteredData);
-
-
-    // fetch('nfs.faireconomy.media/ff_calendar_thisweek.json')
-    // .then(resp => resp.json())
-    // .then(resp => console.log(resp))
-
     return filteredData;
-
-    // const activeFiltersValues = Array.from(this.filterValues.values()).flatMap(
-    //   (x) => Array.from(x)
-    // );
-    // const activeFilterKeys = Array.from(this.filterValues.keys());
-    // return data.filter((x: any) => {
-    //   for (let index = 0; index < activeFilterKeys.length; index++) {
-    //     return !!(x[activeFilterKeys[index]] as string).includes(
-    //       activeFiltersValues[index]
-    //     );
-    //   }
-    //   return;
-    // });
   }
 }
 
