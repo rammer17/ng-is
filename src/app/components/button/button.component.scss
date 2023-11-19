@@ -1,8 +1,11 @@
 .is-button {
-  padding: 0.5rem 1rem;
+  padding: 0rem 1rem;
   border-radius: 0.5rem;
   border: none;
-  transition: box-shadow 0.2s;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
 }
 .is-button:hover:not([disabled]) {
   cursor: pointer;
@@ -50,9 +53,22 @@
   background-color: hsl(var(--accent));
 }
 
+.is-button-ghost {
+  background-color: transparent;
+  color: hsl(var(--foreground));
+}
+.is-button-ghost:hover:not([disabled]) {
+  background-color: hsl(var(--muted));
+}
+
 .is-button-loading {
   opacity: 0.5;
 }
+
+.is-button-dashed {
+  border: 1px dashed hsl(var(--border));
+}
+
 .spinner {
   animation: spin-animation 1s linear infinite;
   display: inline-block;

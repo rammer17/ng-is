@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgTemplateOutlet } from '@angular/common';
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -36,7 +36,16 @@ export class PopoverDirective {
   @Input('appendTo') target: 'body' | undefined;
   @Input('isPopover') showPopover: boolean = true;
   @Input('template') popoverTemplate?: any;
-  @Input('position') position: 'left' | 'right' | 'top' | 'bottom' = 'top';
+  @Input('templateContext') popoverTemplateContext?: any;
+  @Input('position') position:
+    | 'left'
+    | 'right'
+    | 'top'
+    | 'bottom'
+    | 'top-inline-left'
+    | 'top-inline-right'
+    | 'bottom-inline-left'
+    | 'bottom-inline-right' = 'top';
   @Input('animationDuration') animationDuration: number = 150;
 
   private _popoverComponentRef?: ComponentRef<PopoverComponent>;
@@ -62,10 +71,14 @@ export class PopoverDirective {
     //Set direction from which the popover appears depending on its position
     switch (this.position) {
       case 'top':
+      case 'top-inline-left':
+      case 'top-inline-right':
         translateDir = 'Y';
         translateVal = '';
         break;
       case 'bottom':
+      case 'bottom-inline-left':
+      case 'bottom-inline-right':
         translateDir = 'Y';
         translateVal = '-';
         break;
@@ -83,6 +96,7 @@ export class PopoverDirective {
     setTimeout(() => {
       this._popoverComponentRef = this.appendComponent({
         template: this.popoverTemplate,
+        context: this.popoverTemplateContext,
         position: this.position,
         target: this.getLocationViewContainer(),
         translateDirection: translateDir,
@@ -150,7 +164,9 @@ export class PopoverDirective {
 
 @Component({
   selector: 'is-popover',
-  template: ` <ng-container *ngTemplateOutlet="template!"></ng-container> `,
+  template: `
+    <ng-container *ngTemplateOutlet="template!; context: { $implicit: context }"></ng-container>
+  `,
   styles: [
     `
       :host {
@@ -159,20 +175,20 @@ export class PopoverDirective {
         left: 0;
         word-break: keep-all;
         line-break: strict;
-        min-width: 200px;
+        min-width: 100px;
         max-width: 400px;
         overflow: hidden;
       }
     `,
   ],
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('defaultAnimation', [
       state('void, false', style({ transform: 'scale(0)' })),
       transition('* => true', [
-        style({ opacity: 0, transform: 'translate{{ td }}({{ tv }}50%) scale(0.5)' }),
+        style({ opacity: 0, transform: 'translate{{ td }}({{ tv }}30%) scale(0.5)' }),
         animate('{{ ad }}ms', style({ opacity: 1, transform: 'translate{{ td }}(0) scale(1)' })),
       ]),
       transition('* => false', [
@@ -187,7 +203,16 @@ class PopoverComponent {
   private readonly host: ElementRef<HTMLElement> = inject(ElementRef<HTMLElement>);
 
   template!: TemplateRef<any>;
-  position: 'left' | 'right' | 'top' | 'bottom' = 'top';
+  context?: object;
+  position:
+    | 'left'
+    | 'right'
+    | 'top'
+    | 'bottom'
+    | 'top-inline-left'
+    | 'top-inline-right'
+    | 'bottom-inline-left'
+    | 'bottom-inline-right' = 'top';
   target!: HTMLElement;
 
   showLeaveAnimation: boolean = true;
@@ -242,6 +267,26 @@ class PopoverComponent {
       case 'right':
         x = targetRect.left + targetRect.width;
         y = targetRect.top + targetRect.height / 2 - popoverRect.height / 2;
+        break;
+
+      case 'bottom-inline-left':
+        x = targetRect.left;
+        y = targetRect.bottom;
+        break;
+
+      case 'bottom-inline-right':
+        x = targetRect.right - popoverRect.width;
+        y = targetRect.bottom;
+        break;
+
+      case 'top-inline-left':
+        x = targetRect.left;
+        y = targetRect.top - popoverRect.height;
+        break;
+
+      case 'top-inline-right':
+        x = targetRect.right - popoverRect.width;
+        y = targetRect.top - popoverRect.height;
         break;
 
       default:

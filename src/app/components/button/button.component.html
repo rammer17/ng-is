@@ -13,10 +13,11 @@
       [style]="{ color: iconColor }"
       [icon]="['fas', icon]"></fa-icon>
   </ng-container>
-  <ng-container *ngIf="loading === true && !icon">
+  <ng-container *ngIf="loading === true">
     <fa-icon [size]="iconSize" [pull]="iconPos" animation="spin" [icon]="loadingIcon"></fa-icon>
   </ng-container>
   <ng-container *ngIf="label">
     {{ label }}
   </ng-container>
+  <ng-content></ng-content>
 </button>
