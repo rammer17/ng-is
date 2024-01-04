@@ -1,0 +1,64 @@
+.modal-deadarea {
+  background-color: rgba(0, 0, 0, 0.8);
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  dialog {
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    border: 0px solid #fefefe;
+    overscroll-behavior: contain;
+    .modal-heading {
+      color: hsl(var(--primary-foreground));
+      margin: 0 0 0.5rem 0;
+    }
+    .content-paragraph {
+      color: hsl(var(--muted-foreground));
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.5rem;
+      .submit-btn,
+      .cancel-btn {
+        border: 1px solid;
+        border-radius: var(--radius);
+        height: 2rem;
+        white-space: nowrap;
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        transition-property: color, background-color;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 0.15s;
+      }
+      .cancel-btn {
+        border-color: hsl(var(--input));
+        background-color: inherit;
+        color: hsl(var(--primary-foreground));
+      }
+      .cancel-btn:hover {
+        background-color: hsl(var(--accent));
+        color: hsl(var(--accent-foreground));
+        cursor: pointer;
+      }
+      .submit-btn {
+        border-color: hsl(var(--input));
+        background-color: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
+      }
+      .submit-btn:hover {
+        background-color: hsl(var(--secondary) / 0.9);
+        cursor: pointer;
+      }
+    }
+  }
+}

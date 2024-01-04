@@ -9,6 +9,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { PopoverDirective } from './components/popover/popover.directive';
 import { TooltipDirective } from './components/tooltip/tooltip.directive';
 import { DataTableComponent } from './components/data-table/data-table.component';
+import { ModalComponent } from './components/modal/modal.component';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -20,7 +21,8 @@ import { DataTableComponent } from './components/data-table/data-table.component
     ReactiveFormsModule,
     PopoverDirective,
     TooltipDirective,
-    DataTableComponent
+    DataTableComponent,
+    ModalComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
