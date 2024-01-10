@@ -1,4 +1,4 @@
-<div class="modal-deadarea">
+<div class="modal-deadarea" trapFocus>
   <dialog [open]="isModalVisible">
     <!--* Header -->
     <ng-container *ngTemplateOutlet="headerTemplate || defaultHeaderTemplate"></ng-container>
@@ -19,4 +19,3 @@
     </div>
   </dialog>
 </div>
-    
