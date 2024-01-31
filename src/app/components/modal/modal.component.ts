@@ -1,4 +1,4 @@
-import { Component, DestroyRef, HostListener, Input, TemplateRef, inject } from "@angular/core";
+import { Component, DestroyRef, HostListener, Input, InputSignal, TemplateRef, inject, input } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { fromEvent, debounceTime } from "rxjs";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
@@ -17,6 +17,8 @@ export class ModalComponent {
   @Input({ alias: "header", required: false }) headerTemplate?: TemplateRef<any>;
   @Input({ alias: "content", required: false }) contentTemplate?: TemplateRef<any>;
   @Input({ alias: "open", required: false }) isModalVisible: boolean = true;
+
+  showModal: InputSignal<boolean> = input(true);
 
   ngOnInit() {
     this.initEventListenerObservables();
