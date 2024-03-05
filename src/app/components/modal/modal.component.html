@@ -1,5 +1,5 @@
 <div class="modal-deadarea" trapFocus>
-  <dialog [open]="isModalVisible">
+  <dialog [open]="isModalVisible" [@defaultAnimation]="{ value: showAnimation, params: { duration: duration } }">
     <!--* Header -->
     <ng-container *ngTemplateOutlet="headerTemplate || defaultHeaderTemplate"></ng-container>
     <ng-template #defaultHeaderTemplate>
@@ -14,8 +14,8 @@
 
     <!--* Actions -->
     <div class="modal-actions">
-      <button class="cancel-btn">Cancel</button>
-      <button class="submit-btn">Save</button>
+      <button class="cancel-btn" (click)="onCancel()">Cancel</button>
+      <button class="submit-btn" (click)="onSubmit()">Save</button>
     </div>
   </dialog>
 </div>

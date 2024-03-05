@@ -13,9 +13,9 @@
 <!-- <is-data-table></is-data-table> -->
 <!-- </div>
 </div> -->
-<div style="width: 100%; background-color: chartreuse;">
+<div style="width: 100%; height: 100vh; background-color: chartreuse">
   Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aut rerum doloremque deserunt quibusdam fugiat, nisi odio.
   Voluptatibus, asperiores ullam eos culpa aspernatur laboriosam molestiae facere nulla error soluta itaque. Nostrum!
-  <button (click)="test()">HAHA</button>
+  <button (click)="showModal = true">HAHA</button>
 </div>
-<is-modal></is-modal>
+<is-modal *ngIf="showModal" (close)="showModal = false" (submit)="showModal = false"></is-modal>

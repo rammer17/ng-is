@@ -31,14 +31,16 @@ export class AppComponent {
   title = 'ng-is';
   a: any = '';
   b: boolean = false;
+  showModal: boolean = true;
   test() {
     console.log('test');
   }
   
   ngOnInit() {
     setTimeout(() => {
+      // this.showModal = false;
       // console.log(this.a);
-    }, 4000);
+    }, 5000);
   }
 
   constructor(library: FaIconLibrary) {
