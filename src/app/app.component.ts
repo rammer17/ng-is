@@ -10,6 +10,7 @@ import { PopoverDirective } from './components/popover/popover.directive';
 import { TooltipDirective } from './components/tooltip/tooltip.directive';
 import { DataTableComponent } from './components/data-table/data-table.component';
 import { ModalComponent } from './components/modal/modal.component';
+import { ToastComponent } from './components/toast/toast.component';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -22,7 +23,8 @@ import { ModalComponent } from './components/modal/modal.component';
     PopoverDirective,
     TooltipDirective,
     DataTableComponent,
-    ModalComponent
+    ModalComponent,
+    ToastComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],

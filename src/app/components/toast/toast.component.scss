@@ -1,0 +1,23 @@
+:host {
+  width: fit-content;
+  .toast-wrapper {
+    width: 200px;
+    display: flex;
+    justify-content: space-between;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border-radius: var(--radius);
+    border: 2px solid hsl(var(--border));
+    padding: 0.75rem;
+
+    .content {
+      .title {
+        font-size: 1.125em;
+      }
+
+      .description {
+        font-size: 1em;
+      }
+    }
+  }
+}
